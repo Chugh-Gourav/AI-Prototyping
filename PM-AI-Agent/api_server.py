@@ -34,6 +34,14 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+@app.get("/health")
+def health_check():
+    """Health check endpoint for Cloud Run and monitoring."""
+    return {"status": "ok", "service": "staysharp-agent"}
+
+
+
 def _google_search_fallback(title: str, source: str, site_filter: str) -> str:
     """Build a site-restricted Google Search URL for an article."""
     # Pick the most specific domain for the source if we can

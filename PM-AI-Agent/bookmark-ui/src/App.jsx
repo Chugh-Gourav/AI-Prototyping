@@ -35,14 +35,14 @@ function App() {
   const refreshRecommendations = async () => {
     setIsLoading(true)
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/recommendations'
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://staysharp-agent-595396735241.us-central1.run.app/api/recommendations'
       const response = await fetch(apiUrl)
       if (!response.ok) throw new Error('API request failed')
       const data = await response.json()
       setRecommendations(data)
     } catch (err) {
-      console.error("Failed to fetch from API, make sure Python server is running.", err)
-      alert("Failed to refresh. If running locally, make sure your Python API server is running on port 8000.")
+      console.error("Failed to fetch from Cloud Run API:", err)
+      alert("Failed to fetch new recommendations from Cloud Run backend. Please check your connection and try again.")
     } finally {
       setIsLoading(false)
     }
