@@ -1,0 +1,1 @@
+"""StaySharp AI agent package."""

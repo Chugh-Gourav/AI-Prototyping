@@ -1,0 +1,32 @@
+[
+  {
+    "title": "The Anatomy of an AI Agent",
+    "author": "Lilian Weng",
+    "source_and_url": "https://lilianweng.github.io/posts/2023-06-23-agent/",
+    "published_date": "2023-06-23",
+    "why_read_this": "A foundational overview of how LLM-powered autonomous agents work. Essential for Principal PMs designing agentic systems to understand planning, memory, and tool use.",
+    "estimated_read_time": "20 min",
+    "difficulty": "🟡 Intermediate",
+    "pillar": "Agentic AI"
+  },
+  {
+    "title": "Generative AI: A Creative New World",
+    "author": "Sequoia Capital",
+    "source_and_url": "https://www.sequoiacap.com/article/generative-ai-a-creative-new-world/",
+    "published_date": "2022-09-19",
+    "why_read_this": "Provides a high-level strategic framework for the GenAI application landscape. Helps you formulate product strategies in a rapidly evolving market.",
+    "estimated_read_time": "15 min",
+    "difficulty": "🟢 Beginner",
+    "pillar": "Business"
+  },
+  {
+    "title": "Attention Is All You Need",
+    "author": "Ashish Vaswani et al.",
+    "source_and_url": "https://arxiv.org/abs/1706.03762",
+    "published_date": "2017-06-12",
+    "why_read_this": "The seminal paper introducing the Transformer architecture. Reading this helps PMs build deep intuition for how modern LLMs actually process information.",
+    "estimated_read_time": "30 min",
+    "difficulty": "🔴 Advanced",
+    "pillar": "AI Frontier"
+  }
+]
