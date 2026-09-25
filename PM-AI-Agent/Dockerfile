@@ -1,3 +1,11 @@
+# ==============================================================================
+# PM-AI-AGENT: Container Image Specification (Dockerfile)
+# ==============================================================================
+# PRODUCT ROLE:
+#   Defines the production multi-stage container build for Google Cloud Run.
+#   Packages the FastAPI backend server, SQLite database, and StaySharp Agent.
+# ==============================================================================
+
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -17,11 +25,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY staysharp_agent/ ./staysharp_agent/
-COPY api_server.py .
+COPY agent/ ./agent/
+COPY backend/ ./backend/
 
 # Expose Cloud Run default port
 EXPOSE 8080
 
 # Run FastAPI with Uvicorn
-CMD exec uvicorn api_server:app --host 0.0.0.0 --port ${PORT}
+CMD exec uvicorn backend.api_server:app --host 0.0.0.0 --port ${PORT}

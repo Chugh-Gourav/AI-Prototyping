@@ -2,6 +2,27 @@
 Datasets/*.csv
 Datasets/*.json
 
+# Secrets & Keys (Never commit secrets)
+.env
+*.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+*.cert
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node & Frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
 # Python
 __pycache__/
 *.pyc
@@ -10,7 +31,6 @@ __pycache__/
 .Python
 env/
 venv/
-.env
 .venv/
 pip-log.txt
 pip-delete-this-directory.txt

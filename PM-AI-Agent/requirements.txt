@@ -1,3 +1,11 @@
+# ==============================================================================
+# PM-AI-AGENT: Python Dependencies (requirements.txt)
+# ==============================================================================
+# PRODUCT ROLE:
+#   Specifies the required Python runtimes for the FastAPI backend, Google ADK
+#   agent, Gemini LLM client, and link-verification networking engines.
+# ==============================================================================
+
 google-adk>=1.0.0
 google-genai
 fastapi

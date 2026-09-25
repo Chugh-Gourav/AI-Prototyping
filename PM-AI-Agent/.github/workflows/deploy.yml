@@ -1,4 +1,4 @@
-name: Deploy Gourav's Bookmarks to GitHub Pages
+name: Deploy PM Learning Hub to GitHub Pages
 
 on:
   push:
@@ -31,10 +31,12 @@ jobs:
           
       - name: Install dependencies & Build
         run: |
-          if [ -d "PM-AI-Agent/bookmark-ui" ]; then
+          if [ -d "PM-AI-Agent/frontend" ]; then
+            cd PM-AI-Agent/frontend
+          elif [ -d "frontend" ]; then
+            cd frontend
+          elif [ -d "PM-AI-Agent/bookmark-ui" ]; then
             cd PM-AI-Agent/bookmark-ui
-          elif [ -d "bookmark-ui" ]; then
-            cd bookmark-ui
           fi
           npm ci
           npm run build
@@ -45,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './PM-AI-Agent/bookmark-ui/dist'
+          path: './PM-AI-Agent/frontend/dist'
 
   deploy:
     environment:

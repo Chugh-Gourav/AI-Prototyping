@@ -1,9 +1,18 @@
-# Environment and secrets
+# Environment and secrets (Zero credentials in repo)
 .env
 *.env
 .env.*
 !.env.example
+*.pem
+*.key
+*.token
+*.cert
+
+# Databases and local state
 *.db
+*.sqlite
+*.sqlite3
+backend/pm_hub.db
 .adk/
 
 # Python
@@ -33,11 +42,13 @@ venv/
 ENV/
 
 # Node & Frontend
-bookmark-ui/node_modules/
-bookmark-ui/dist/
-bookmark-ui/.local
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.local
+bookmark-ui/
 
-# OS
+# OS and system files
 .DS_Store
 .DS_Store?
 ._*

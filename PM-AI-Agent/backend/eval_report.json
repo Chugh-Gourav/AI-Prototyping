@@ -1,0 +1,18 @@
+{
+  "total_articles": 21,
+  "composite_score": 94.0,
+  "pass_status": "PASS",
+  "breakdown": {
+    "domain_authority": "19.0/25 (16/21 tier-1 sources)",
+    "pillar_balance": "25.0/25 (5/4 pillars with 4+ articles for 2x2 grid)",
+    "problem_and_tier1_depth": "30.0/30 (self-contained PM takeaways + Tier-1 context)",
+    "access_transparency": "20.0/20 (open/subscription classification)"
+  },
+  "pillar_distribution": {
+    "AI Frontier": 5,
+    "Agentic AI": 5,
+    "Business": 5,
+    "Applied AI": 3,
+    "Product Ideas": 3
+  }
+}

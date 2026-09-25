@@ -1,9 +1,17 @@
-"""StaySharp AI — Root Agent Definition.
-
-A personal AI learning agent for Principal/Staff PMs to stay sharp on
-AI, agentic systems, hands-on technical skills, and business strategy.
-
-Built with Google ADK (Agent Development Kit).
+"""
+==============================================================================
+PM-AI-AGENT: Conversational Agent Root (agent.py)
+==============================================================================
+PRODUCT ROLE:
+  Executive learning coach for Principal/Staff PMs and Product Leaders.
+  Built using Google ADK (Agent Development Kit) & Gemini 2.5 Flash.
+  Equipped with 5 specialized product tools:
+  - curate_reading_list: Real-time discovery grounded in Tier 1-3 allowlisted sources.
+  - generate_exercise: Hands-on code & prompt architecture exercises.
+  - applied_agentic_case: Production case studies (Netflix, Stripe, Databricks).
+  - business_deep_dive: Token economics, pricing models, and gross margin analysis.
+  - weekly_sprint_plan: Personalized 5-day learning sprints for PM skill upgrades.
+==============================================================================
 """
 
 from google.adk.agents import Agent
