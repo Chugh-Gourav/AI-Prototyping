@@ -1,4 +1,4 @@
-# Horizontal Context Engine (User Memory)
+# User Memory Prototype (Horizontal Context Engine)
 
 *Note: This README documentation was AI-generated as part of a product management simulation.*
 
