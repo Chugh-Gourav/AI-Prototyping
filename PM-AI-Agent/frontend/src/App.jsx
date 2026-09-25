@@ -59,6 +59,8 @@ import {
 } from 'lucide-react'
 import './index.css'
 
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '')
+
 const DEFAULT_PROFILES = [
   { id: 'gourav', name: 'Gourav', avatar: 'G' },
   { id: 'alex', name: 'Alex M.', avatar: 'A' },
@@ -185,7 +187,7 @@ function App() {
   // Load staged candidates from SQLite backend
   const loadStagedArticles = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/curator/staged')
+      const res = await fetch(`${API_BASE}/api/curator/staged`)
       if (!res.ok) return
       const data = await res.json()
       if (data && Array.isArray(data.staged_articles)) {
@@ -232,7 +234,7 @@ function App() {
   const handleApproveCandidate = async () => {
     if (!currentCandidate) return
     try {
-      const res = await fetch(`http://localhost:8000/api/curator/${currentCandidate.id}/review`, {
+      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -257,7 +259,7 @@ function App() {
   const handleEditAndApproveCandidate = async () => {
     if (!currentCandidate) return
     try {
-      const res = await fetch(`http://localhost:8000/api/curator/${currentCandidate.id}/review`, {
+      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -283,7 +285,7 @@ function App() {
   const handleRejectCandidate = async () => {
     if (!currentCandidate) return
     try {
-      const res = await fetch(`http://localhost:8000/api/curator/${currentCandidate.id}/review`, {
+      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -309,7 +311,7 @@ function App() {
     setIsCheckingGrammar(true)
     showToast("✍️ Analyzing grammar, acronym casing & executive flow...")
     try {
-      const res = await fetch('http://localhost:8000/api/curator/check-grammar', {
+      const res = await fetch(`${API_BASE}/api/curator/check-grammar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -345,7 +347,7 @@ function App() {
     setIsFetchingCandidates(true)
     showToast("⚡ Agent searching 2026 practitioner sources with critique feedback...")
     try {
-      const res = await fetch('http://localhost:8000/api/agent/fetch-candidates', {
+      const res = await fetch(`${API_BASE}/api/agent/fetch-candidates`, {
         method: 'POST'
       })
       const data = await res.json()
@@ -396,7 +398,7 @@ function App() {
   const loadRecommendations = async (pillar = 'all', isRefresh = false) => {
     setIsLoading(true)
     try {
-      const url = `http://localhost:8000/api/recommendations?pillar=${encodeURIComponent(pillar)}&refresh=${isRefresh}`
+      const url = `${API_BASE}/api/recommendations?pillar=${encodeURIComponent(pillar)}&refresh=${isRefresh}`
       const response = await fetch(url)
       if (!response.ok) throw new Error('API request failed')
       const data = await response.json()
@@ -526,7 +528,7 @@ function App() {
     showToast("⚡ Swapping with higher-depth 2026 alternative...")
     try {
       const visibleIds = recommendations.map(r => r.id)
-      const res = await fetch(`http://localhost:8000/api/cards/${rec.id}/replace`, {
+      const res = await fetch(`${API_BASE}/api/cards/${rec.id}/replace`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -577,7 +579,7 @@ function App() {
       showToast(labels[newType] || "Feedback updated")
 
       try {
-        await fetch('http://localhost:8000/api/feedback', {
+        await fetch(`${API_BASE}/api/feedback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -611,7 +613,7 @@ function App() {
     showToast(`📝 Note saved: "${note.length > 25 ? note.slice(0, 25) + '...' : note}"`)
 
     try {
-      await fetch('http://localhost:8000/api/feedback', {
+      await fetch(`${API_BASE}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

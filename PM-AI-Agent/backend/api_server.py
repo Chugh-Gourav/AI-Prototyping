@@ -25,6 +25,8 @@ RUNNING LOCALLY:
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import json
 import os
@@ -34,7 +36,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import requests
 from dotenv import load_dotenv
-
+import sys
+sys.path.insert(0, os.path.dirname(__file__))
 import db
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '..', 'agent', '.env')
@@ -80,11 +83,20 @@ class CardReplacePayload(BaseModel):
     currently_visible_ids: list[str] = []
 
 
-@app.get("/")
 @app.get("/health")
+@app.get("/api/health")
 def health_check():
     """Health check endpoint for Cloud Run and monitoring."""
     return {"status": "ok", "service": "pm-learning-hub-api", "version": "2.2.0"}
+
+
+@app.get("/")
+def root_route():
+    """Serves the frontend SPA index if built, otherwise returns health status."""
+    index_file = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist", "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return health_check()
 
 
 @app.get("/api/recommendations")
@@ -894,6 +906,25 @@ Return JSON:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ------------------------------------------------------------------------------
+# Production Frontend SPA Serving
+# ------------------------------------------------------------------------------
+dist_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.exists(dist_dir):
+    assets_dir = os.path.join(dist_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    def serve_frontend_spa(full_path: str):
+        if full_path.startswith("api"):
+            raise HTTPException(status_code=404, detail="API endpoint not found")
+        target_file = os.path.join(dist_dir, full_path)
+        if full_path and os.path.exists(target_file) and os.path.isfile(target_file):
+            return FileResponse(target_file)
+        return FileResponse(os.path.join(dist_dir, "index.html"))
 
 
 if __name__ == "__main__":
