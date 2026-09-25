@@ -2,11 +2,16 @@
 
 > **An executive intelligence platform and continuous learning companion for Product Managers, Staff/Principal PMs, and AI Product Leaders.**
 
+[![Live Demo](https://img.shields.io/badge/Google%20Cloud%20Run-Live%20Deployment-34A853.svg)](https://pm-learning-hub-595396735241.us-central1.run.app)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com)
 [![React + Vite](https://img.shields.io/badge/Frontend-React%20%7C%20Vite-61DAFB.svg)](https://vitejs.dev/)
 [![Gemini 2.5](https://img.shields.io/badge/AI%20Model-Gemini%202.5%20Flash-4285F4.svg)](https://ai.google.dev/)
 [![Zero Secrets](https://img.shields.io/badge/Security-Zero%20Secrets%20%7C%20No%20PII-green.svg)](#security-privacy--zero-secrets-guarantee)
+
+> 🚀 **Live Production URL**: [https://pm-learning-hub-595396735241.us-central1.run.app](https://pm-learning-hub-595396735241.us-central1.run.app)  
+> 🛠️ **Curator Review Mode**: [https://pm-learning-hub-595396735241.us-central1.run.app/?curator=true](https://pm-learning-hub-595396735241.us-central1.run.app/?curator=true)  
+> 📄 **GitHub Pages Mirror**: [https://chugh-gourav.github.io/AI-ML-Prototyping/](https://chugh-gourav.github.io/AI-ML-Prototyping/)
 
 ---
 
