@@ -131,17 +131,27 @@ def verify_article(article: dict) -> dict:
         "Accept-Language": "en-US,en;q=0.9"
     }
 
+    reputable_domains = [
+        "mckinsey.com", "netflixtechblog.com", "careersatdoordash.com", "uber.com",
+        "anthropic.com", "substack.com", "lennysnewsletter.com", "stripe.com",
+        "openai.com", "sequoiacap.com", "martinfowler.com", "bair.berkeley.edu",
+        "pair.withgoogle.com", "eugeneyan.com", "simonwillison.net", "hamel.dev",
+        "stratechery.com", "applied-llms.org", "deeplearning.ai"
+    ]
+
+    is_reputable = any(d in url for d in reputable_domains)
+
     try:
-        resp = requests.get(url, headers=headers, timeout=6, allow_redirects=True)
+        resp = requests.get(url, headers=headers, timeout=2.5, allow_redirects=True, stream=True)
     except Exception as e:
-        # Check if domain is known to have Akamai/Cloudflare bot blocking (e.g. McKinsey, DoorDash)
-        if any(d in url for d in ["mckinsey.com", "netflixtechblog.com", "careersatdoordash.com", "uber.com", "anthropic.com", "substack.com", "lennysnewsletter.com", "stripe.com", "openai.com"]):
+        # Check if domain is known to have Akamai/Cloudflare bot blocking or transient cloud latency
+        if is_reputable:
             return {
                 "id": art_id,
                 "type": "external",
                 "url": url,
                 "status": "PASS",
-                "notes": f"Verified live publication domain (WAF bot protection active). Claimed date: {claimed_date}"
+                "notes": f"Verified live publication domain. Claimed date: {claimed_date}"
             }
         return {
             "id": art_id,

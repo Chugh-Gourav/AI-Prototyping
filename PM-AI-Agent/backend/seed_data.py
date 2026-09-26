@@ -604,6 +604,114 @@ SEED_ARTICLES = [
     }
 ]
 
+SEED_STAGED_CANDIDATES = [
+    {
+        "id": "staged-1",
+        "title": "Claude 3.7 Sonnet and Hybrid Reasoning: Adaptive Inference at Scale",
+        "author": "Anthropic Research",
+        "source_and_url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+        "published_date": "2025-02-24",
+        "pillar": "AI Deep Dive & Application",
+        "tier": "Tier 1",
+        "difficulty": "🔴 Advanced",
+        "access_type": "open",
+        "estimated_read_time": "14 min",
+        "summary": "Rigid reasoning models force product teams to choose between slow, high-latency test-time compute and fast, low-cost standard generation. Anthropic ships hybrid reasoning architecture allowing product teams to dynamically adjust test-time compute token budgets per query. Essential architecture blueprint for PMs designing adaptive reasoning workflows balancing latency against response quality.",
+        "summary_problem": "Rigid reasoning models force product teams into an all-or-nothing tradeoff between expensive, high-latency test-time compute and fast, low-cost standard generation.",
+        "summary_insight": "Anthropic deploys hybrid reasoning architecture allowing product teams to dynamically steer test-time thinking budgets per query—from 0 tokens for simple lookups to 128k tokens for complex math and architecture reviews.",
+        "summary_why_read": "The industry's first production model giving product managers direct runtime API control over reasoning budgets, latency SLAs, and token spend.",
+        "outcome_learning": "Model dynamic test-time compute token budgets based on query complexity to balance UX latency against reasoning precision.",
+        "meta_synthesis": "Connects Hybrid Test-Time Compute (Architecture) to Dynamic Per-Query Token Margins (Economics) to Adaptive High-Assurance Enterprise Roadmaps (Product Strategy).",
+        "key_takeaways": [
+            "Hybrid architecture gives PMs programmatic runtime control over reasoning token budgets.",
+            "Simple queries bypass thinking tokens to maintain sub-second response times.",
+            "Complex multi-step coding and math queries scale thinking tokens dynamically up to 128k context."
+        ],
+        "eval_score": 96.0,
+        "is_timeless": 0,
+        "status": "staged",
+        "curated_by": "staysharp_agent_v2",
+        "review_rubric": {
+            "summary_fidelity": 5,
+            "pm_relevance": 5,
+            "meta_thinking": 5,
+            "actionability": 5,
+            "pre_score": 96.0,
+            "eval_rationale": "Landmark release for AI PMs: solves the rigid reasoning latency bottleneck with runtime parameter controls."
+        }
+    },
+    {
+        "id": "staged-2",
+        "title": "Building an LLM-Powered Customer Service Agent at Scale",
+        "author": "Klarna Engineering & OpenAI",
+        "source_and_url": "https://openai.com/index/klarna/",
+        "published_date": "2024-03-05",
+        "pillar": "Business & Economics",
+        "tier": "Tier 1",
+        "difficulty": "🟡 Intermediate",
+        "access_type": "open",
+        "estimated_read_time": "12 min",
+        "summary": "High support headcount and repetitive multi-language customer queries inflate operating expenses in scaling fintech platforms. Klarna deployed a production customer service agent handling two-thirds of all customer chats across 35 languages. Benchmark case study on customer service agent automation and real-world unit economics.",
+        "summary_problem": "High support headcount and repetitive multi-language customer queries inflate operating expenses in scaling fintech platforms.",
+        "summary_insight": "Klarna deployed a production customer service agent handling two-thirds of all customer chats across 35 languages, reducing resolution times from 11 minutes to under 2 minutes.",
+        "summary_why_read": "Benchmark case study on customer service agent automation and real-world unit economics: generated $40M in annualized profit improvement.",
+        "outcome_learning": "Model labor cost deflection vs. inference spend for customer-facing agent workflows.",
+        "meta_synthesis": "Connects Production RAG & Support Agents (Architecture) to $40M Labor Expense Deflection (Economics) to Scaling Global 24/7 Multi-Lingual Product Operations (Product Strategy).",
+        "key_takeaways": [
+            "Agent handled 2.3M conversations in first month, equivalent to the work of 700 full-time human agents.",
+            "Resolution time dropped from 11 minutes to under 2 minutes with identical CSAT scores.",
+            "Drove an estimated $40M in annualized profit improvement."
+        ],
+        "eval_score": 95.0,
+        "is_timeless": 0,
+        "status": "staged",
+        "curated_by": "staysharp_agent_v2",
+        "review_rubric": {
+            "summary_fidelity": 5,
+            "pm_relevance": 5,
+            "meta_thinking": 5,
+            "actionability": 5,
+            "pre_score": 95.0,
+            "eval_rationale": "Essential case study on enterprise agent economics and measurable margin impact."
+        }
+    },
+    {
+        "id": "staged-3",
+        "title": "Introducing Canvas: A New Interface for Working with ChatGPT",
+        "author": "OpenAI Product & Design",
+        "source_and_url": "https://openai.com/index/introducing-canvas/",
+        "published_date": "2024-10-03",
+        "pillar": "Core Product Management",
+        "tier": "Tier 1",
+        "difficulty": "🟢 Beginner",
+        "access_type": "open",
+        "estimated_read_time": "11 min",
+        "summary": "Single-turn linear chat interfaces fail when users need to iterate, edit, and collaborate on complex documents or codebases. OpenAI introduced a dual-pane canvas interface combining conversational direction with direct in-line document manipulation. The defining paradigm shift in AI product UX: moving from turn-based chat to co-creation work surfaces.",
+        "summary_problem": "Single-turn linear chat interfaces fail when users need to iterate, edit, and collaborate on complex documents or codebases.",
+        "summary_insight": "OpenAI introduced a dual-pane canvas interface combining conversational direction with direct in-line document manipulation.",
+        "summary_why_read": "The defining paradigm shift in AI product UX: moving from turn-based chat to co-creation work surfaces.",
+        "outcome_learning": "Design interactive workspace UIs that blend conversational intent with direct manipulation.",
+        "meta_synthesis": "Connects Stateful Dual-Pane Canvas (Architecture) to Higher User Retention & Session Stickiness (Economics) to Evolving from Conversational Prompts to Direct Co-Creation Workbenches (Product Strategy).",
+        "key_takeaways": [
+            "Dual-pane architecture bridges user intent with localized inline edits without full regeneration.",
+            "Targeted smart shortcuts reduce cognitive load for non-technical users.",
+            "Stateful tracking of document versions prevents context erasure during iterative prompts."
+        ],
+        "eval_score": 94.0,
+        "is_timeless": 0,
+        "status": "staged",
+        "curated_by": "staysharp_agent_v2",
+        "review_rubric": {
+            "summary_fidelity": 5,
+            "pm_relevance": 5,
+            "meta_thinking": 5,
+            "actionability": 5,
+            "pre_score": 94.0,
+            "eval_rationale": "High-signal UX and product strategy case study on moving beyond linear chat to interactive canvas interfaces."
+        }
+    }
+]
+
 def reseed_catalog():
     """Seeds the authoritative verified 23-item catalog into SQLite and syncs recommendations.json."""
     db.init_db()
@@ -611,7 +719,8 @@ def reseed_catalog():
     cursor = conn.cursor()
 
     cursor.execute("DELETE FROM articles WHERE COALESCE(status, 'published') = 'published'")
-    print("Cleared existing published articles.")
+    cursor.execute("DELETE FROM articles WHERE status = 'staged'")
+    print("Cleared existing published and staged articles.")
 
     for art in SEED_ARTICLES:
         cursor.execute("""
@@ -643,30 +752,75 @@ def reseed_catalog():
             art.get("is_timeless", 0)
         ))
 
+    # Pre-seed 3 staged candidates for immediate HITL review
+    for cand in SEED_STAGED_CANDIDATES:
+        cursor.execute("""
+            INSERT INTO articles (
+                id, title, author, source_and_url, published_date, pillar,
+                tier, difficulty, access_type, estimated_read_time,
+                summary, summary_problem, summary_insight, summary_why_read,
+                outcome_learning, meta_synthesis, key_takeaways, eval_score, is_timeless,
+                status, curated_by, review_rubric, staged_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'staged', ?, ?, CURRENT_TIMESTAMP)
+        """, (
+            cand["id"],
+            cand["title"],
+            cand["author"],
+            cand["source_and_url"],
+            cand["published_date"],
+            cand["pillar"],
+            cand["tier"],
+            cand["difficulty"],
+            cand["access_type"],
+            cand["estimated_read_time"],
+            cand["summary"],
+            cand["summary_problem"],
+            cand["summary_insight"],
+            cand["summary_why_read"],
+            cand["outcome_learning"],
+            cand.get("meta_synthesis", ""),
+            json.dumps(cand["key_takeaways"]),
+            cand.get("eval_score", 95.0),
+            cand.get("is_timeless", 0),
+            cand.get("curated_by", "staysharp_agent_v2"),
+            json.dumps(cand.get("review_rubric", {}))
+        ))
+
     conn.commit()
     cursor.execute("SELECT COUNT(*), pillar FROM articles WHERE status = 'published' GROUP BY pillar")
     counts = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*) FROM articles WHERE status = 'staged'")
+    staged_total = cursor.fetchone()[0]
     conn.close()
 
     print("Successfully re-seeded master catalog into SQLite:")
     for row in counts:
         print(f"  - {row[1]}: {row[0]} articles")
+    print(f"  - Pre-staged candidate queue: {staged_total} articles ready for review")
 
-    # Sync to frontend/public/recommendations.json if directory exists
+    # Sync to frontend/public/recommendations.json and staged_candidates.json
     try:
-        if os.path.exists(os.path.dirname(FRONTEND_PUBLIC)):
+        pub_dir = os.path.dirname(FRONTEND_PUBLIC)
+        if os.path.exists(pub_dir):
             with open(FRONTEND_PUBLIC, "w", encoding="utf-8") as f:
                 json.dump(SEED_ARTICLES, f, indent=2, ensure_ascii=False)
-            print(f"Successfully synced {len(SEED_ARTICLES)} articles to {FRONTEND_PUBLIC}")
+            staged_pub = os.path.join(pub_dir, "staged_candidates.json")
+            with open(staged_pub, "w", encoding="utf-8") as f:
+                json.dump(SEED_STAGED_CANDIDATES, f, indent=2, ensure_ascii=False)
+            print(f"Successfully synced recommendations.json and staged_candidates.json to {pub_dir}")
         
-        # Also sync to dist if present in container
-        dist_path = os.path.join(PROJECT_ROOT, "frontend", "dist", "recommendations.json")
-        if os.path.exists(os.path.dirname(dist_path)):
-            with open(dist_path, "w", encoding="utf-8") as f:
+        # Also sync to dist if present
+        dist_dir = os.path.join(PROJECT_ROOT, "frontend", "dist")
+        if os.path.exists(dist_dir):
+            dist_recs = os.path.join(dist_dir, "recommendations.json")
+            dist_staged = os.path.join(dist_dir, "staged_candidates.json")
+            with open(dist_recs, "w", encoding="utf-8") as f:
                 json.dump(SEED_ARTICLES, f, indent=2, ensure_ascii=False)
-            print(f"Successfully synced {len(SEED_ARTICLES)} articles to {dist_path}")
+            with open(dist_staged, "w", encoding="utf-8") as f:
+                json.dump(SEED_STAGED_CANDIDATES, f, indent=2, ensure_ascii=False)
+            print(f"Successfully synced recommendations.json and staged_candidates.json to {dist_dir}")
     except Exception as e:
-        print(f"Notice: skipped writing recommendations.json: {e}")
+        print(f"Notice: skipped writing json files: {e}")
 
 if __name__ == "__main__":
     reseed_catalog()

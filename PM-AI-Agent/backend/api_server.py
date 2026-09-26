@@ -1031,6 +1031,7 @@ Return JSON:
             "tier1_fails": tier1_fails,
             "tier2_avg_score": avg_score,
             "staged_count": staged_count,
+            "staged_articles": db.get_staged_articles(),
             "message": f"Successfully evaluated and staged {staged_count} candidates for PM review."
         }
 
@@ -1056,7 +1057,10 @@ if os.path.exists(dist_dir):
         target_file = os.path.join(dist_dir, full_path)
         if full_path and os.path.exists(target_file) and os.path.isfile(target_file):
             return FileResponse(target_file)
-        return FileResponse(os.path.join(dist_dir, "index.html"))
+        return FileResponse(
+            os.path.join(dist_dir, "index.html"),
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+        )
 
 
 if __name__ == "__main__":

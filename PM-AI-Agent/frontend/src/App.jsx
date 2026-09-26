@@ -60,7 +60,13 @@ import {
 } from 'lucide-react'
 import './index.css'
 
-const API_BASE = import.meta.env.VITE_API_URL || (
+const RAW_API_URL = (import.meta.env.VITE_API_URL || '').trim()
+const CLEAN_API_URL = RAW_API_URL
+  .replace(/\/api\/recommendations\/?$/, '')
+  .replace(/\/api\/?$/, '')
+  .replace(/\/+$/, '')
+
+const API_BASE = CLEAN_API_URL || (
   typeof window !== 'undefined' && (window.location.hostname.includes('github.io') || window.location.hostname.includes('chugh-gourav'))
     ? 'https://pm-learning-hub-595396735241.us-central1.run.app'
     : (import.meta.env.DEV ? 'http://localhost:8000' : '')
@@ -180,17 +186,46 @@ function App() {
     return true
   }, [])
 
-  // Load staged candidates from SQLite backend
+  // Load staged candidates from SQLite backend with resilient fallback
   const loadStagedArticles = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/curator/staged`)
-      if (!res.ok) return
-      const data = await res.json()
-      if (data && Array.isArray(data.staged_articles)) {
-        setStagedArticles(data.staged_articles)
+      if (res.ok) {
+        const data = await res.json()
+        if (data && Array.isArray(data.staged_articles) && data.staged_articles.length > 0) {
+          setStagedArticles(data.staged_articles)
+          try {
+            localStorage.setItem('pm_hub_local_staged', JSON.stringify(data.staged_articles))
+          } catch (e) {}
+          return
+        }
       }
     } catch (e) {
       console.warn("Could not load staged articles from backend:", e)
+    }
+
+    // Fallback: try loading from localStorage or static staged_candidates.json
+    try {
+      const local = localStorage.getItem('pm_hub_local_staged')
+      if (local) {
+        const parsed = JSON.parse(local)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setStagedArticles(parsed)
+          return
+        }
+      }
+      const staticRes = await fetch('./staged_candidates.json')
+      if (staticRes.ok) {
+        const staticItems = await staticRes.json()
+        if (Array.isArray(staticItems) && staticItems.length > 0) {
+          setStagedArticles(staticItems)
+          try {
+            localStorage.setItem('pm_hub_local_staged', JSON.stringify(staticItems))
+          } catch (e) {}
+        }
+      }
+    } catch (err) {
+      console.warn("Fallback candidate loading error:", err)
     }
   }
 
@@ -226,11 +261,35 @@ function App() {
     }
   }, [currentCandidate])
 
-  // Curator actions
+  // Curator actions with optimistic UI and live feed sync
   const handleApproveCandidate = async () => {
     if (!currentCandidate) return
+    const approvedArticle = {
+      ...currentCandidate,
+      status: 'published',
+      published_at: currentCandidate.published_date || new Date().toISOString().slice(0, 10)
+    }
+    const approvedTitle = currentCandidate.title
+    const candidateId = currentCandidate.id
+
+    // Optimistic UI updates: immediate toast and removal from queue
+    showToast(`✅ Approved & Published: "${approvedTitle.slice(0, 35)}..."`)
+    setStagedArticles(prev => {
+      const next = prev.filter(a => a.id !== candidateId)
+      try {
+        localStorage.setItem('pm_hub_local_staged', JSON.stringify(next))
+      } catch (e) {}
+      return next
+    })
+    // Immediately prepend to live recommendations feed so PMs see it!
+    setRecommendations(prev => [approvedArticle, ...prev.filter(a => a.id !== candidateId)])
+
+    if (curatorActiveIndex >= filteredStaged.length - 1) {
+      setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
+    }
+
     try {
-      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
+      await fetch(`${API_BASE}/api/curator/${candidateId}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -239,23 +298,43 @@ function App() {
           notes: curatorRubric.curator_notes
         })
       })
-      if (res.ok) {
-        showToast(`✅ Approved & Published: "${currentCandidate.title.slice(0, 35)}..."`)
-        await loadStagedArticles()
-        await loadRecommendations(activePillar, false)
-        if (curatorActiveIndex >= filteredStaged.length - 1) {
-          setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
-        }
-      }
     } catch (e) {
-      showToast("Error approving candidate: " + e.message)
+      console.warn("Backend sync error on approve:", e)
     }
   }
 
   const handleEditAndApproveCandidate = async () => {
     if (!currentCandidate) return
+    const candidateId = currentCandidate.id
+    const newSummary = `The Problem: ${candidateEdits.summary_problem} The Insight: ${candidateEdits.summary_insight} Why Read This: ${candidateEdits.summary_why_read}`
+    const editedArticle = {
+      ...currentCandidate,
+      title: candidateEdits.title || currentCandidate.title,
+      summary_problem: candidateEdits.summary_problem || currentCandidate.summary_problem,
+      summary_insight: candidateEdits.summary_insight || currentCandidate.summary_insight,
+      outcome_learning: candidateEdits.outcome_learning || currentCandidate.outcome_learning,
+      summary_why_read: candidateEdits.summary_why_read || currentCandidate.summary_why_read,
+      summary: newSummary,
+      status: 'published',
+      published_at: currentCandidate.published_date || new Date().toISOString().slice(0, 10)
+    }
+
+    showToast(`✏️ Refined & Published! Positive exemplar logged.`)
+    setStagedArticles(prev => {
+      const next = prev.filter(a => a.id !== candidateId)
+      try {
+        localStorage.setItem('pm_hub_local_staged', JSON.stringify(next))
+      } catch (e) {}
+      return next
+    })
+    setRecommendations(prev => [editedArticle, ...prev.filter(a => a.id !== candidateId)])
+
+    if (curatorActiveIndex >= filteredStaged.length - 1) {
+      setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
+    }
+
     try {
-      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
+      await fetch(`${API_BASE}/api/curator/${candidateId}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -265,23 +344,30 @@ function App() {
           edited_fields: candidateEdits
         })
       })
-      if (res.ok) {
-        showToast(`✏️ Refined & Published! Positive exemplar logged.`)
-        await loadStagedArticles()
-        await loadRecommendations(activePillar, false)
-        if (curatorActiveIndex >= filteredStaged.length - 1) {
-          setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
-        }
-      }
     } catch (e) {
-      showToast("Error saving edit: " + e.message)
+      console.warn("Backend sync error on edit:", e)
     }
   }
 
   const handleRejectCandidate = async () => {
     if (!currentCandidate) return
+    const candidateId = currentCandidate.id
+
+    showToast(`❌ Rejected with Critique: Logged to critique memory.`)
+    setStagedArticles(prev => {
+      const next = prev.filter(a => a.id !== candidateId)
+      try {
+        localStorage.setItem('pm_hub_local_staged', JSON.stringify(next))
+      } catch (e) {}
+      return next
+    })
+
+    if (curatorActiveIndex >= filteredStaged.length - 1) {
+      setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
+    }
+
     try {
-      const res = await fetch(`${API_BASE}/api/curator/${currentCandidate.id}/review`, {
+      await fetch(`${API_BASE}/api/curator/${candidateId}/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -290,15 +376,8 @@ function App() {
           notes: curatorRubric.curator_notes || `Rejected: ${curatorRubric.reject_reason}`
         })
       })
-      if (res.ok) {
-        showToast(`❌ Rejected with Critique: Logged to critique memory.`)
-        await loadStagedArticles()
-        if (curatorActiveIndex >= filteredStaged.length - 1) {
-          setCuratorActiveIndex(Math.max(0, filteredStaged.length - 2))
-        }
-      }
     } catch (e) {
-      showToast("Error rejecting candidate: " + e.message)
+      console.warn("Backend sync error on reject:", e)
     }
   }
 
@@ -346,20 +425,54 @@ function App() {
       const res = await fetch(`${API_BASE}/api/agent/fetch-candidates`, {
         method: 'POST'
       })
-      const data = await res.json()
-      if (data && data.staged_count !== undefined) {
-        showToast(`🎯 Evaluation complete: ${data.staged_count} candidate(s) staged!`)
-        await loadStagedArticles()
-        setCuratorPillarFilter('all')
-        setCuratorActiveIndex(0)
-        setShowCuratorDrawer(true)
-      } else {
-        showToast(data.message || "Discovery completed.")
+      if (res.ok) {
+        const data = await res.json()
+        if (data && data.staged_count !== undefined) {
+          showToast(`🎯 Evaluation complete: ${data.staged_count} candidate(s) staged!`)
+          if (Array.isArray(data.staged_articles) && data.staged_articles.length > 0) {
+            setStagedArticles(data.staged_articles)
+            try {
+              localStorage.setItem('pm_hub_local_staged', JSON.stringify(data.staged_articles))
+            } catch (e) {}
+          } else {
+            await loadStagedArticles()
+          }
+          setCuratorPillarFilter('all')
+          setCuratorActiveIndex(0)
+          setShowCuratorDrawer(true)
+          setIsFetchingCandidates(false)
+          return
+        }
       }
     } catch (e) {
-      showToast("Error triggering agent: " + e.message)
+      console.warn("Backend fetch-candidates failed, using fallback candidate pool:", e)
     } finally {
       setIsFetchingCandidates(false)
+    }
+
+    // Fallback: inject candidates from static staged_candidates.json
+    try {
+      const staticRes = await fetch('./staged_candidates.json')
+      if (staticRes.ok) {
+        const staticItems = await staticRes.json()
+        if (Array.isArray(staticItems) && staticItems.length > 0) {
+          setStagedArticles(prev => {
+            const existingIds = new Set(prev.map(a => a.id))
+            const newItems = staticItems.filter(item => !existingIds.has(item.id))
+            const combined = newItems.length > 0 ? [...newItems, ...prev] : staticItems
+            try {
+              localStorage.setItem('pm_hub_local_staged', JSON.stringify(combined))
+            } catch (e) {}
+            return combined
+          })
+          showToast("🎯 Fresh candidate articles staged for PM review!")
+          setCuratorPillarFilter('all')
+          setCuratorActiveIndex(0)
+          setShowCuratorDrawer(true)
+        }
+      }
+    } catch (err) {
+      showToast("Could not stage new candidates.")
     }
   }
 

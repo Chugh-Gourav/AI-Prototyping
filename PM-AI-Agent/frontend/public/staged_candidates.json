@@ -1,0 +1,107 @@
+[
+  {
+    "id": "staged-1",
+    "title": "Claude 3.7 Sonnet and Hybrid Reasoning: Adaptive Inference at Scale",
+    "author": "Anthropic Research",
+    "source_and_url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+    "published_date": "2025-02-24",
+    "pillar": "AI Deep Dive & Application",
+    "tier": "Tier 1",
+    "difficulty": "🔴 Advanced",
+    "access_type": "open",
+    "estimated_read_time": "14 min",
+    "summary": "Rigid reasoning models force product teams to choose between slow, high-latency test-time compute and fast, low-cost standard generation. Anthropic ships hybrid reasoning architecture allowing product teams to dynamically adjust test-time compute token budgets per query. Essential architecture blueprint for PMs designing adaptive reasoning workflows balancing latency against response quality.",
+    "summary_problem": "Rigid reasoning models force product teams into an all-or-nothing tradeoff between expensive, high-latency test-time compute and fast, low-cost standard generation.",
+    "summary_insight": "Anthropic deploys hybrid reasoning architecture allowing product teams to dynamically steer test-time thinking budgets per query—from 0 tokens for simple lookups to 128k tokens for complex math and architecture reviews.",
+    "summary_why_read": "The industry's first production model giving product managers direct runtime API control over reasoning budgets, latency SLAs, and token spend.",
+    "outcome_learning": "Model dynamic test-time compute token budgets based on query complexity to balance UX latency against reasoning precision.",
+    "meta_synthesis": "Connects Hybrid Test-Time Compute (Architecture) to Dynamic Per-Query Token Margins (Economics) to Adaptive High-Assurance Enterprise Roadmaps (Product Strategy).",
+    "key_takeaways": [
+      "Hybrid architecture gives PMs programmatic runtime control over reasoning token budgets.",
+      "Simple queries bypass thinking tokens to maintain sub-second response times.",
+      "Complex multi-step coding and math queries scale thinking tokens dynamically up to 128k context."
+    ],
+    "eval_score": 96.0,
+    "is_timeless": 0,
+    "status": "staged",
+    "curated_by": "staysharp_agent_v2",
+    "review_rubric": {
+      "summary_fidelity": 5,
+      "pm_relevance": 5,
+      "meta_thinking": 5,
+      "actionability": 5,
+      "pre_score": 96.0,
+      "eval_rationale": "Landmark release for AI PMs: solves the rigid reasoning latency bottleneck with runtime parameter controls."
+    }
+  },
+  {
+    "id": "staged-2",
+    "title": "Building an LLM-Powered Customer Service Agent at Scale",
+    "author": "Klarna Engineering & OpenAI",
+    "source_and_url": "https://openai.com/index/klarna/",
+    "published_date": "2024-03-05",
+    "pillar": "Business & Economics",
+    "tier": "Tier 1",
+    "difficulty": "🟡 Intermediate",
+    "access_type": "open",
+    "estimated_read_time": "12 min",
+    "summary": "High support headcount and repetitive multi-language customer queries inflate operating expenses in scaling fintech platforms. Klarna deployed a production customer service agent handling two-thirds of all customer chats across 35 languages. Benchmark case study on customer service agent automation and real-world unit economics.",
+    "summary_problem": "High support headcount and repetitive multi-language customer queries inflate operating expenses in scaling fintech platforms.",
+    "summary_insight": "Klarna deployed a production customer service agent handling two-thirds of all customer chats across 35 languages, reducing resolution times from 11 minutes to under 2 minutes.",
+    "summary_why_read": "Benchmark case study on customer service agent automation and real-world unit economics: generated $40M in annualized profit improvement.",
+    "outcome_learning": "Model labor cost deflection vs. inference spend for customer-facing agent workflows.",
+    "meta_synthesis": "Connects Production RAG & Support Agents (Architecture) to $40M Labor Expense Deflection (Economics) to Scaling Global 24/7 Multi-Lingual Product Operations (Product Strategy).",
+    "key_takeaways": [
+      "Agent handled 2.3M conversations in first month, equivalent to the work of 700 full-time human agents.",
+      "Resolution time dropped from 11 minutes to under 2 minutes with identical CSAT scores.",
+      "Drove an estimated $40M in annualized profit improvement."
+    ],
+    "eval_score": 95.0,
+    "is_timeless": 0,
+    "status": "staged",
+    "curated_by": "staysharp_agent_v2",
+    "review_rubric": {
+      "summary_fidelity": 5,
+      "pm_relevance": 5,
+      "meta_thinking": 5,
+      "actionability": 5,
+      "pre_score": 95.0,
+      "eval_rationale": "Essential case study on enterprise agent economics and measurable margin impact."
+    }
+  },
+  {
+    "id": "staged-3",
+    "title": "Introducing Canvas: A New Interface for Working with ChatGPT",
+    "author": "OpenAI Product & Design",
+    "source_and_url": "https://openai.com/index/introducing-canvas/",
+    "published_date": "2024-10-03",
+    "pillar": "Core Product Management",
+    "tier": "Tier 1",
+    "difficulty": "🟢 Beginner",
+    "access_type": "open",
+    "estimated_read_time": "11 min",
+    "summary": "Single-turn linear chat interfaces fail when users need to iterate, edit, and collaborate on complex documents or codebases. OpenAI introduced a dual-pane canvas interface combining conversational direction with direct in-line document manipulation. The defining paradigm shift in AI product UX: moving from turn-based chat to co-creation work surfaces.",
+    "summary_problem": "Single-turn linear chat interfaces fail when users need to iterate, edit, and collaborate on complex documents or codebases.",
+    "summary_insight": "OpenAI introduced a dual-pane canvas interface combining conversational direction with direct in-line document manipulation.",
+    "summary_why_read": "The defining paradigm shift in AI product UX: moving from turn-based chat to co-creation work surfaces.",
+    "outcome_learning": "Design interactive workspace UIs that blend conversational intent with direct manipulation.",
+    "meta_synthesis": "Connects Stateful Dual-Pane Canvas (Architecture) to Higher User Retention & Session Stickiness (Economics) to Evolving from Conversational Prompts to Direct Co-Creation Workbenches (Product Strategy).",
+    "key_takeaways": [
+      "Dual-pane architecture bridges user intent with localized inline edits without full regeneration.",
+      "Targeted smart shortcuts reduce cognitive load for non-technical users.",
+      "Stateful tracking of document versions prevents context erasure during iterative prompts."
+    ],
+    "eval_score": 94.0,
+    "is_timeless": 0,
+    "status": "staged",
+    "curated_by": "staysharp_agent_v2",
+    "review_rubric": {
+      "summary_fidelity": 5,
+      "pm_relevance": 5,
+      "meta_thinking": 5,
+      "actionability": 5,
+      "pre_score": 94.0,
+      "eval_rationale": "High-signal UX and product strategy case study on moving beyond linear chat to interactive canvas interfaces."
+    }
+  }
+]
