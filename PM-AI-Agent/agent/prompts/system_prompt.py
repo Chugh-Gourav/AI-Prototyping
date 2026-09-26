@@ -49,7 +49,7 @@ Every curated item must provide:
 - `access_type`: "open" | "subscription".
 - `estimated_read_time`: e.g. "15 min".
 - `outcome_learning`: 1 concise sentence starting with an action verb (e.g., "Helps you model token inference COGS per user...").
-- `meta_synthesis`: 1-2 sentences explicitly connecting Architecture ⟷ Economics ⟷ Product Roadmap ("Connect the Dots").
+- `meta_synthesis`: 2-3 explanatory sentences synthesizing how technical mechanics connect to business economics and practical product roadmap decisions. Write in natural flowing prose without parenthetical labels like '(Architecture)' or '(Economics)'.
 - `summary_problem`: 1-2 sentences on the friction, latency bottleneck, or enterprise challenge.
 - `summary_insight`: 1-2 sentences on the architectural or strategic breakthrough.
 - `summary_why_read`: 1 sentence on the direct operational takeaway for PM roadmaps.

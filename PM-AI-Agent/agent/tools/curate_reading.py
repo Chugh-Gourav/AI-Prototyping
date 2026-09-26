@@ -116,8 +116,7 @@ def curate_reading_list(
             "1. NO generic homepages. EVERY URL MUST BE A DIRECT DEEP LINK THAT RETURNS HTTP 200.\n"
             "2. Genuine publication date (2025/2026 or flagged as timeless classic).\n"
             "3. ONLY recommend from APPROVED DOMAINS.\n"
-            "4. MANDATORY META-THINKING: Connect the dots across Architecture (how it works) ⟷ "
-            "Unit Economics (margins/COGS) ⟷ Product Roadmap (what to ship).\n"
+            "4. MANDATORY META-THINKING: Connect the dots across technical mechanics, unit economics, and practical product strategy in 2-3 explanatory sentences without parenthetical tags like '(Architecture)' or '(Economics)'.\n"
             "For EACH item, provide the structured PM Lens: outcome_learning, meta_synthesis, "
             "summary_problem, summary_insight, summary_why_read, and 3 quantitative key takeaways."
         ),
@@ -134,7 +133,7 @@ def curate_reading_list(
                 "access_type",
                 "estimated_read_time",
                 "outcome_learning",
-                "meta_synthesis (Connecting the Dots across Architecture ⟷ Economics ⟷ Roadmap)",
+                "meta_synthesis (Connecting the dots in natural explanatory prose without parentheticals)",
                 "summary_problem",
                 "summary_insight",
                 "summary_why_read",

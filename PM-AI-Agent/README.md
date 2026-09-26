@@ -11,7 +11,7 @@
 
 > 🚀 **Live Production URL**: [https://pm-learning-hub-595396735241.us-central1.run.app](https://pm-learning-hub-595396735241.us-central1.run.app)  
 > 🛠️ **Curator Review Mode**: [https://pm-learning-hub-595396735241.us-central1.run.app/?curator=true](https://pm-learning-hub-595396735241.us-central1.run.app/?curator=true)  
-> 📄 **GitHub Pages Mirror**: [https://chugh-gourav.github.io/AI-ML-Prototyping/](https://chugh-gourav.github.io/AI-ML-Prototyping/)
+> 📄 **GitHub Pages Mirror**: [https://chugh-gourav.github.io/AI-Prototyping/](https://chugh-gourav.github.io/AI-Prototyping/)
 
 ---
 
@@ -28,10 +28,11 @@ As AI advances rapidly from prompt engineering to compound reasoning systems and
 The **PM Learning Hub** is an autonomous, editorial-grade intelligence hub designed to give product leaders a high-leverage competitive edge:
 1. **Verified 2025/2026 Practitioner Sources**: Sourced strictly from Tier-1 research labs (DeepMind, Anthropic, OpenAI) and battle-tested engineering teams (Netflix, Stripe, DoorDash, Uber, Databricks).
 2. **Executive Flowing Summaries**: Articles are synthesized into concise, high-density narrative prose connecting the technical problem, the shipped architecture, and the strategic "So What" for Senior/Staff PMs.
-3. **Dual-Tier Closed-Loop Feedback**:
+3. **Cross-Pillar Meta-Thinking ("Connect the Dots")**: Synthesizes how Technical Architecture ⟷ Unit Economics ⟷ Product Roadmap interconnect for every piece.
+4. **Dual-Tier Closed-Loop Feedback**:
    - **Real-Time User Steering**: Instant card micro-swaps, upvotes, and custom steer notes immediately re-rank the live feed.
    - **Editorial Critique Memory**: Rejections and editorial refinements are recorded into SQLite to steer future autonomous agent discovery runs.
-4. **Ready-to-Build Starter PRDs**: Interactive, copy-pasteable product requirement documents with user friction definitions, architecture diagrams, latency SLAs, and unit economic models.
+5. **Human-in-the-Loop (HITL) Curator Mode**: Pre-staged candidate queue with "Fetch Content and Review", grammar polishing, and 1-click live database publishing.
 
 ---
 
@@ -39,10 +40,10 @@ The **PM Learning Hub** is an autonomous, editorial-grade intelligence hub desig
 
 | Pillar | Focus Area | Example Topics & Practitioner Case Studies |
 | :--- | :--- | :--- |
-| **1. AI Deep Dive & Application** | Technical architectures, reasoning models, agentic workflows, production evals | Contextual retrieval, hybrid test-time reasoning, multimodal video search (Netflix), multi-model LLM juries (DoorDash). |
-| **2. Business & Economics** | AI unit economics, pricing models, gross margin defense, enterprise adoption | Token COGS modeling, defending 70%+ SaaS margins, open vs. closed model TCO (a16z), enterprise budget shifts (Sequoia). |
-| **3. Core Product Management** | Product sense, human discernment, executive decision frameworks in the AI era | Human judgment when execution is automated (Shreyas Doshi), empirical AI developer tooling evals (Thoughtworks). |
-| **4. Product Ideas to Try** | Contextual problem-first enterprise opportunities with complete Starter PRDs | Enterprise context-cached support copilot, real-time query intent classifiers, autonomous compliance auditing agents. |
+| **1. AI Deep Dive & Application** | Technical architectures, reasoning models, agentic workflows, production evals | Contextual retrieval, hybrid test-time reasoning (Anthropic), multimodal video search (Netflix), multi-model LLM juries (DoorDash). |
+| **2. Business & Economics** | AI unit economics, pricing models, gross margin defense, enterprise adoption | Token COGS modeling, defending 70%+ SaaS margins, open vs. closed model TCO (a16z), enterprise agent economics (Klarna & OpenAI). |
+| **3. Core Product Management** | Product sense, human discernment, executive decision frameworks in the AI era | Human judgment when execution is automated (Shreyas Doshi), empirical AI developer tooling evals (Thoughtworks), Canvas co-creation UX (OpenAI). |
+| **4. Product Ideas to try** | Actionable product interaction design patterns, GUI automation, and prototyping patterns | People + AI Guidebook UX heuristics (Google PAIR), Computer Use agent workflows (Anthropic), production LLM patterns (Eugene Yan). |
 
 ---
 
@@ -177,8 +178,8 @@ PM-AI-Agent/
 
 ### Step 1: Clone Repository & Setup Environment
 ```bash
-git clone https://github.com/Chugh-Gourav/AI-ML-Prototyping.git
-cd AI-ML-Prototyping/PM-AI-Agent
+git clone https://github.com/Chugh-Gourav/AI-Prototyping.git
+cd AI-Prototyping/PM-AI-Agent
 ```
 
 ### Step 2: Configure Environment (Optional for Live Gemini Discovery)
@@ -214,17 +215,19 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ### 1. Reader / Executive Mode
 Navigate to **`http://localhost:5173`**:
-- Read executive flowing summaries with embedded problem/insight/so-what analysis.
+- Read executive flowing summaries with embedded problem, shipped architecture, and strategic takeaway.
+- Dive into **Cross-Pillar Meta-Thinking ("Connect the Dots")** linking technical mechanics, unit economics, and product strategy.
+- Explore **Product Ideas to try** with human-centered AI heuristics (Google PAIR) and desktop automation patterns (Anthropic Computer Use).
 - Use **`Signal` (👍)**, **`Applied` (✓)**, and **`Swap` (🎛)** to steer the live feed in real time.
-- Click **"View Starter PRD & Architecture Spec"** on Pillar 4 cards to review full specifications.
-- Bookmark articles and share customized reading lists.
+- Filter by pillar, search full-text articles, bookmark favorites, and export customized reading lists.
 
 ### 2. Curator Review Drawer (HITL Mode)
 Navigate to **`http://localhost:5173/?curator=true`**:
-- Opens the slide-over **Curator Review Drawer**.
-- Audit AI-discovered candidate articles before publication.
+- Opens the slide-over **Curator Review Drawer** with pre-staged candidate articles ready for evaluation.
+- Click **`Fetch Content and Review`** to trigger autonomous Gemini discovery, URL integrity verification, and pre-scoring.
 - Click **`✨ Check Grammar & Polish`** to run automated grammar checks and executive phrasing optimization.
-- **Approve**, **Refine & Publish**, or **Reject** candidates with flaw classification to train the agent's critique memory.
+- Click **`Approve Live`** or **`Edit & Publish`** to instantly commit the approved article into the production SQLite database and promote it into the live feed.
+- **Reject** unsuitable candidates with flaw classification to train the agent's critique memory.
 
 ---
 
