@@ -310,11 +310,18 @@ def replace_single_card(card_id: str, pillar: str, feedback_type: str, user_prom
 
     candidates = get_ranked_articles(limit=10, pillar=pillar if pillar != "Top Picks" else "all", exclude_ids=list(visible))
     if not candidates:
+        # Fallback 1: search in all pillars excluding visible
         candidates = get_ranked_articles(limit=5, pillar="all", exclude_ids=list(visible))
+    if not candidates:
+        # Fallback 2: all items are currently visible; cycle to a different candidate in the same pillar
+        candidates = get_ranked_articles(limit=10, pillar=pillar if pillar != "Top Picks" else "all", exclude_ids=[card_id])
+    if not candidates:
+        # Fallback 3: cycle to any different candidate across all pillars
+        candidates = get_ranked_articles(limit=10, pillar="all", exclude_ids=[card_id])
 
     if candidates:
         replacement = candidates[0]
-        replacement["replacement_reason"] = "Replaced: Biased toward deeper technical architecture & verified 2026 practitioner source"
+        replacement["replacement_reason"] = "⚡ Swapped: Biased toward deeper technical architecture & verified practitioner source"
         return replacement
     return None
 

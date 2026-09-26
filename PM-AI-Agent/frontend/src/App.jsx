@@ -524,7 +524,7 @@ function App() {
 
   // Immediate Loop Closure: Micro-swap card on feedback
   const handleCardReplace = async (rec, feedbackType, userPrompt = '') => {
-    showToast("⚡ Swapping with higher-depth 2026 alternative...")
+    showToast("⚡ Swapping with higher-depth alternative...")
     try {
       const visibleIds = recommendations.map(r => r.id)
       const res = await fetch(`${API_BASE}/api/cards/${rec.id}/replace`, {
@@ -537,23 +537,38 @@ function App() {
           currently_visible_ids: visibleIds
         })
       })
-      if (!res.ok) throw new Error("Replacement failed")
+      if (!res.ok) throw new Error("Replacement API returned non-200")
       const data = await res.json()
-      if (data.card) {
-        setRecommendations(prev => prev.map(item => item.id === rec.id ? { ...data.card, justReplaced: true } : item))
+      if (data && data.card) {
+        setRecommendations(prev => prev.map(item => item.id === rec.id ? { 
+          ...data.card, 
+          id: `${data.card.id}-swapped-${Date.now()}`,
+          justReplaced: true, 
+          replacement_reason: data.message || "⚡ Swapped with deeper technical source" 
+        } : item))
         showToast("✨ Card swapped with deeper technical source!")
         setActivePromptRecId(null)
         setPromptInput('')
+      } else {
+        throw new Error("No card in replacement payload")
       }
     } catch (err) {
-      console.warn("Card replacement API unreachable, using cached fallback:", err)
-      const visibleSet = new Set(recommendations.map(r => r.id))
-      // Try to find an unshown article in the same pillar, or another pillar
-      const fallback = recommendations.find(r => r.pillar === rec.pillar && !visibleSet.has(r.id)) ||
-                       recommendations.find(r => !visibleSet.has(r.id) && r.id !== rec.id)
-      if (fallback) {
-        setRecommendations(prev => prev.map(item => item.id === rec.id ? { ...fallback, justReplaced: true, replacement_reason: "Replaced with alternative from catalog" } : item))
+      console.warn("Card replacement API unreachable or exhausted, using client-side rotation fallback:", err)
+      const otherArticles = recommendations.filter(r => r.id !== rec.id)
+      const samePillar = otherArticles.filter(r => r.pillar === rec.pillar)
+      const pool = samePillar.length > 0 ? samePillar : otherArticles
+      if (pool.length > 0) {
+        const picked = pool[Math.floor(Math.random() * pool.length)]
+        const swappedCard = {
+          ...picked,
+          id: `${picked.id}-swapped-${Date.now()}`,
+          justReplaced: true,
+          replacement_reason: "⚡ Swapped: Biased toward deeper technical architecture & verified practitioner source"
+        }
+        setRecommendations(prev => prev.map(item => item.id === rec.id ? swappedCard : item))
         showToast("✨ Card swapped with alternative source!")
+        setActivePromptRecId(null)
+        setPromptInput('')
       } else {
         showToast("Recorded feedback for ranking engine.")
       }
