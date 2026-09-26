@@ -3,7 +3,7 @@ import sys
 import json
 
 # Setup paths
-PROJECT_ROOT = "/Users/gouravsstudy/Desktop/AI Revision, and Fun Learning/PM-AI-Agent"
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 BACKEND_DIR = os.path.join(PROJECT_ROOT, "backend")
 FRONTEND_PUBLIC = os.path.join(PROJECT_ROOT, "frontend", "public", "recommendations.json")
 sys.path.insert(0, BACKEND_DIR)
@@ -652,10 +652,21 @@ def reseed_catalog():
     for row in counts:
         print(f"  - {row[1]}: {row[0]} articles")
 
-    # Sync to frontend/public/recommendations.json
-    with open(FRONTEND_PUBLIC, "w", encoding="utf-8") as f:
-        json.dump(SEED_ARTICLES, f, indent=2, ensure_ascii=False)
-    print(f"Successfully synced {len(SEED_ARTICLES)} articles to {FRONTEND_PUBLIC}")
+    # Sync to frontend/public/recommendations.json if directory exists
+    try:
+        if os.path.exists(os.path.dirname(FRONTEND_PUBLIC)):
+            with open(FRONTEND_PUBLIC, "w", encoding="utf-8") as f:
+                json.dump(SEED_ARTICLES, f, indent=2, ensure_ascii=False)
+            print(f"Successfully synced {len(SEED_ARTICLES)} articles to {FRONTEND_PUBLIC}")
+        
+        # Also sync to dist if present in container
+        dist_path = os.path.join(PROJECT_ROOT, "frontend", "dist", "recommendations.json")
+        if os.path.exists(os.path.dirname(dist_path)):
+            with open(dist_path, "w", encoding="utf-8") as f:
+                json.dump(SEED_ARTICLES, f, indent=2, ensure_ascii=False)
+            print(f"Successfully synced {len(SEED_ARTICLES)} articles to {dist_path}")
+    except Exception as e:
+        print(f"Notice: skipped writing recommendations.json: {e}")
 
 if __name__ == "__main__":
     reseed_catalog()
