@@ -18,6 +18,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import {
   Compass,
   BrainCircuit,
+  Network,
   Sparkles,
   Flame,
   Cpu,
@@ -59,7 +60,11 @@ import {
 } from 'lucide-react'
 import './index.css'
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '')
+const API_BASE = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && (window.location.hostname.includes('github.io') || window.location.hostname.includes('chugh-gourav'))
+    ? 'https://pm-learning-hub-595396735241.us-central1.run.app'
+    : (import.meta.env.DEV ? 'http://localhost:8000' : '')
+)
 
 const DEFAULT_PROFILES = [
   { id: 'gourav', name: 'Gourav', avatar: 'G' },
@@ -140,8 +145,6 @@ function App() {
   const [activePromptRecId, setActivePromptRecId] = useState(null)
   const [promptInput, setPromptInput] = useState('')
 
-  // Starter Spec Modal for Pillar 5
-  const [activeSpecArticle, setActiveSpecArticle] = useState(null)
 
   // HITL Curator Mode State
   const [showCuratorDrawer, setShowCuratorDrawer] = useState(false)
@@ -166,22 +169,15 @@ function App() {
   })
   const [isCheckingGrammar, setIsCheckingGrammar] = useState(false)
 
-  // Curator Auth detection (localhost or ?curator_key=PM_LEAD_2026 or ?curator=true)
+  // Curator Auth detection (enabled by default; set ?curator=false or ?view=public to hide)
   const isCurator = useMemo(() => {
-    if (typeof window === 'undefined') return false
+    if (typeof window === 'undefined') return true
     const params = new URLSearchParams(window.location.search)
     if (params.get('curator') === 'false' || params.get('view') === 'public') {
       localStorage.removeItem('pm_hub_curator_auth')
       return false
     }
-    const hasKey = params.get('curator_key') === 'PM_LEAD_2026' || params.get('curator') === 'true'
-    const savedAuth = localStorage.getItem('pm_hub_curator_auth') === 'true'
-    if (hasKey) {
-      localStorage.setItem('pm_hub_curator_auth', 'true')
-      return true
-    }
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    return isLocal || savedAuth
+    return true
   }, [])
 
   // Load staged candidates from SQLite backend
@@ -345,15 +341,18 @@ function App() {
 
   const handleTriggerAgentCuration = async () => {
     setIsFetchingCandidates(true)
-    showToast("⚡ Agent searching 2026 practitioner sources with critique feedback...")
+    showToast("⚡ Agent discovering 2026 practitioner engineering sources...")
     try {
       const res = await fetch(`${API_BASE}/api/agent/fetch-candidates`, {
         method: 'POST'
       })
       const data = await res.json()
       if (data && data.staged_count !== undefined) {
-        showToast(`🎯 Evaluation complete: ${data.staged_count} candidates staged!`)
+        showToast(`🎯 Evaluation complete: ${data.staged_count} candidate(s) staged!`)
         await loadStagedArticles()
+        setCuratorPillarFilter('all')
+        setCuratorActiveIndex(0)
+        setShowCuratorDrawer(true)
       } else {
         showToast(data.message || "Discovery completed.")
       }
@@ -547,8 +546,17 @@ function App() {
         setPromptInput('')
       }
     } catch (err) {
-      console.warn("Card replacement failed:", err)
-      showToast("Recorded feedback for ranking engine.")
+      console.warn("Card replacement API unreachable, using cached fallback:", err)
+      const visibleSet = new Set(recommendations.map(r => r.id))
+      // Try to find an unshown article in the same pillar, or another pillar
+      const fallback = recommendations.find(r => r.pillar === rec.pillar && !visibleSet.has(r.id)) ||
+                       recommendations.find(r => !visibleSet.has(r.id) && r.id !== rec.id)
+      if (fallback) {
+        setRecommendations(prev => prev.map(item => item.id === rec.id ? { ...fallback, justReplaced: true, replacement_reason: "Replaced with alternative from catalog" } : item))
+        showToast("✨ Card swapped with alternative source!")
+      } else {
+        showToast("Recorded feedback for ranking engine.")
+      }
     }
   }
 
@@ -736,9 +744,10 @@ function App() {
     return recommendations.filter(r => r.pillar === 'Core Product Management').slice(0, 4)
   }, [recommendations])
 
-  const ideasPicks = useMemo(() => {
+  const productIdeasPicks = useMemo(() => {
     return recommendations.filter(r => r.pillar === 'Product Ideas to try').slice(0, 4)
   }, [recommendations])
+
 
   const spotlightArticle = recommendations[0] || topPicks[0]
 
@@ -805,44 +814,24 @@ function App() {
               <button
                 className="btn-quick-url"
                 onClick={() => {
-                  if (rec.starter_spec) {
-                    const spec = rec.starter_spec
-                    const md = `# PRD: ${spec.project_name}\n\n## Objective\n${spec.objective}\n\n## Target Personas\n${spec.target_personas ? spec.target_personas.join(', ') : ''}\n\n## Core Features\n${spec.core_features ? spec.core_features.map(f => `- ${f}`).join('\n') : ''}\n\n## Metrics & SLAs\n${spec.metrics ? Object.entries(spec.metrics).map(([k, v]) => `- **${k}**: ${v}`).join('\n') : ''}`
-                    navigator.clipboard.writeText(md)
-                    showToast("📋 PRD copied to clipboard as Markdown!")
-                  } else {
-                    navigator.clipboard.writeText(rec.source_and_url)
-                    showToast("📋 Link copied! Press Cmd+D to bookmark in browser.")
-                  }
+                  navigator.clipboard.writeText(rec.source_and_url)
+                  showToast("📋 Link copied! Press Cmd+D to bookmark in browser.")
                 }}
-                title={rec.starter_spec ? "Copy PRD as Markdown" : "Copy link (Press Cmd+D to bookmark)"}
+                title="Copy link (Press Cmd+D to bookmark)"
               >
-                {rec.starter_spec ? <Copy size={12} /> : <BookmarkPlus size={12} />}
+                <BookmarkPlus size={12} />
               </button>
 
-              {rec.starter_spec ? (
-                <button
-                  type="button"
-                  className="card-source-link"
-                  onClick={() => setActiveSpecArticle(rec)}
-                  title="Open Starter PRD & Spec"
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--sky-blue)' }}
-                >
-                  <FileText size={11} />
-                  <span>Interactive PRD</span>
-                </button>
-              ) : (
-                <a
-                  href={rec.source_and_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="card-source-link"
-                  title={`Visit ${domain}`}
-                >
-                  <ExternalLink size={10} />
-                  <span>{domain}</span>
-                </a>
-              )}
+              <a
+                href={rec.source_and_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-source-link"
+                title={`Visit ${domain}`}
+              >
+                <ExternalLink size={10} />
+                <span>{domain}</span>
+              </a>
 
               <button
                 className={`btn-bookmark-toggle ${isSaved ? 'saved' : ''}`}
@@ -859,15 +848,9 @@ function App() {
           <div className="card-body">
             <a 
               href={rec.source_and_url} 
-              target={rec.starter_spec ? undefined : "_blank"} 
-              rel={rec.starter_spec ? undefined : "noopener noreferrer"} 
+              target="_blank" 
+              rel="noopener noreferrer" 
               className="card-title"
-              onClick={(e) => {
-                if (rec.starter_spec) {
-                  e.preventDefault()
-                  setActiveSpecArticle(rec)
-                }
-              }}
             >
               {rec.title}
             </a>
@@ -882,6 +865,17 @@ function App() {
               <div className="card-outcome-banner">
                 <Compass size={13} />
                 <span>{rec.outcome_learning}</span>
+              </div>
+            )}
+
+            {/* Cross-Pillar Meta-Thinking ("Connect the Dots") */}
+            {rec.meta_synthesis && (
+              <div className="card-meta-banner">
+                <div className="meta-banner-header">
+                  <Network size={12} className="meta-icon" />
+                  <span className="meta-label">Connect the Dots:</span>
+                </div>
+                <p className="meta-text">{rec.meta_synthesis}</p>
               </div>
             )}
 
@@ -919,16 +913,7 @@ function App() {
               </div>
             )}
 
-            {/* Pillar 5 Special Action: Open Starter PRD */}
-            {rec.starter_spec && (
-              <button 
-                className="btn-starter-prd"
-                onClick={() => setActiveSpecArticle(rec)}
-              >
-                <FileText size={12} />
-                <span>Open Starter PRD Spec</span>
-              </button>
-            )}
+
           </div>
         </div>
 
@@ -1173,6 +1158,13 @@ function App() {
                 </div>
               )}
 
+              {spotlightArticle.meta_synthesis && (
+                <div className="hero-meta-banner">
+                  <Network size={14} className="hero-meta-icon" />
+                  <span><strong>Connect the Dots:</strong> {spotlightArticle.meta_synthesis}</span>
+                </div>
+              )}
+
               {spotlightArticle.summary_problem ? (
                 <p className="hero-summary-flowing">
                   <span className="hero-problem">{spotlightArticle.summary_problem.trim()}</span>{' '}
@@ -1192,26 +1184,15 @@ function App() {
               )}
 
               <div className="hero-action-buttons">
-                {spotlightArticle.starter_spec ? (
-                  <button
-                    type="button"
-                    className="btn-hero-primary"
-                    onClick={() => setActiveSpecArticle(spotlightArticle)}
-                  >
-                    <FileText size={14} />
-                    <span>View Interactive PRD & Architecture Spec</span>
-                  </button>
-                ) : (
-                  <a
-                    href={spotlightArticle.source_and_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-hero-primary"
-                  >
-                    <ExternalLink size={14} />
-                    <span>Read Direct Deep Dive</span>
-                  </a>
-                )}
+                <a
+                  href={spotlightArticle.source_and_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-hero-primary"
+                >
+                  <ExternalLink size={14} />
+                  <span>Read Full Article</span>
+                </a>
 
                 <button
                   className={`btn-hero-secondary ${bookmarks.some(b => b.url === spotlightArticle.source_and_url) ? 'bookmarked' : ''}`}
@@ -1318,53 +1299,22 @@ function App() {
               </section>
             )}
 
-            {/* Pillar 4: Product Ideas to try Row (WIP) */}
-            <section className="pillar-section">
-              <div className="pillar-header">
-                <div className="pillar-title-group">
-                  <Lightbulb size={18} style={{ color: '#f59e0b' }} />
-                  <h2 className="pillar-heading">Product Ideas to try</h2>
+            {/* Pillar 4: Product Ideas to try Row */}
+            {productIdeasPicks.length > 0 && (
+              <section className="pillar-section">
+                <div className="pillar-header">
+                  <div className="pillar-title-group">
+                    <Sparkles size={18} style={{ color: '#f59e0b' }} />
+                    <h2 className="pillar-heading">Product Ideas to try</h2>
+                  </div>
+                  <span className="pillar-subtitle">Actionable UX patterns & concepts</span>
                 </div>
-                <span className="wip-pill">🚧 Work In Progress</span>
-              </div>
-              <div className="wip-banner-card">
-                <div className="wip-badge-icon">
-                  <Sparkles size={20} style={{ color: '#d97706' }} />
+                <div className="cards-grid-2x2">
+                  {productIdeasPicks.map((rec, idx) => renderCard(rec, idx))}
                 </div>
-                <div className="wip-body">
-                  <h4 className="wip-title">Product Ideas & PRD Specs (WIP)</h4>
-                  <p className="wip-desc">
-                    All previous placeholder content has been purged. This section is reserved for verified real-world AI Product Ideas and actionable PRD specifications.
-                  </p>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
           </>
-        ) : activePillar === 'Product Ideas to try' ? (
-          /* Dedicated WIP View for Product Ideas to try */
-          <section className="pillar-section">
-            <div className="pillar-header">
-              <div className="pillar-title-group">
-                <Lightbulb size={18} style={{ color: '#f59e0b' }} />
-                <h2 className="pillar-heading">Product Ideas to try</h2>
-              </div>
-              <span className="wip-pill">🚧 Work In Progress</span>
-            </div>
-            <div className="wip-banner-card wip-banner-expanded">
-              <div className="wip-badge-icon">
-                <Sparkles size={32} style={{ color: '#d97706' }} />
-              </div>
-              <div className="wip-body">
-                <h3 className="wip-title">Section Under Construction (WIP)</h3>
-                <p className="wip-desc">
-                  All placeholder YieldOps PRD cards have been purged from the catalog. This section is currently work-in-progress to curate authentic, production-grade AI Product Ideas, spec templates, and strategic teardowns.
-                </p>
-                <div className="wip-footer-note">
-                  <span>💡 Active catalog currently holds only the 20 approved landmark articles across AI Deep Dive & Application, Business & Economics, and Core Product Management.</span>
-                </div>
-              </div>
-            </div>
-          </section>
         ) : (
           /* Filtered Pillar View */
           <section className="pillar-section">
@@ -1475,16 +1425,9 @@ function App() {
 
                       <a 
                         href={item.url} 
-                        target={item.starter_spec ? undefined : "_blank"} 
-                        rel={item.starter_spec ? undefined : "noopener noreferrer"} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
                         className="saved-card-compact-title"
-                        onClick={(e) => {
-                          if (item.starter_spec) {
-                            e.preventDefault()
-                            setActiveSpecArticle(item)
-                            setShowSavedDrawer(false)
-                          }
-                        }}
                       >
                         {item.title}
                       </a>
@@ -1806,227 +1749,6 @@ function App() {
         </div>
       )}
 
-      {/* Starter Spec Modal for Pillar 5 (YieldOps AI PRD Standard) */}
-      {activeSpecArticle && activeSpecArticle.starter_spec && (
-        <div className="spec-modal-overlay" onClick={() => setActiveSpecArticle(null)}>
-          <div className="spec-modal-container" style={{ maxWidth: '780px' }} onClick={e => e.stopPropagation()}>
-            <div className="spec-modal-header">
-              <div>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <span className="badge-pillar">
-                    Interactive Starter PRD
-                  </span>
-                  <span style={{ background: '#05203c', color: '#38bdf8', padding: '2px 8px', borderRadius: 4, fontSize: '0.72rem', fontWeight: 700 }}>
-                    2026 Production Standard
-                  </span>
-                </div>
-                <h3 className="spec-modal-title">
-                  {activeSpecArticle.starter_spec.project_name || activeSpecArticle.title}
-                </h3>
-                {activeSpecArticle.starter_spec.subtitle && (
-                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                    {activeSpecArticle.starter_spec.subtitle}
-                  </p>
-                )}
-              </div>
-              <button 
-                className="btn-drawer-close"
-                onClick={() => setActiveSpecArticle(null)}
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Problem Statement & Why Now */}
-            {activeSpecArticle.starter_spec.problem_statement ? (
-              <div className="spec-section">
-                <div className="spec-section-title">1. Problem Statement & Why Now</div>
-                <div className="spec-section-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <div><strong>Business Pain:</strong> {activeSpecArticle.starter_spec.problem_statement.business_pain}</div>
-                  <div><strong>Why Now (2026 Inflection):</strong> {activeSpecArticle.starter_spec.problem_statement.why_now}</div>
-                </div>
-              </div>
-            ) : activeSpecArticle.starter_spec.objective && (
-              <div className="spec-section">
-                <div className="spec-section-title">Core Objective</div>
-                <div className="spec-section-body">
-                  {activeSpecArticle.starter_spec.objective}
-                </div>
-              </div>
-            )}
-
-            {/* Target Personas */}
-            {activeSpecArticle.starter_spec.personas && Array.isArray(activeSpecArticle.starter_spec.personas) && (
-              <div className="spec-section">
-                <div className="spec-section-title">2. Target Personas</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.35rem' }}>
-                  {activeSpecArticle.starter_spec.personas.map((p, idx) => (
-                    typeof p === 'string' ? (
-                      <div key={idx} className="spec-metric-card">
-                        <div className="spec-metric-val">{p}</div>
-                      </div>
-                    ) : (
-                      <div key={idx} className="spec-metric-card" style={{ padding: '0.75rem' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--navy-primary)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>{p.role}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#475569', marginBottom: '0.2rem' }}><strong>Goal:</strong> {p.goal}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#dc2626' }}><strong>Pain:</strong> {p.pain_point}</div>
-                      </div>
-                    )
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Solution Overview */}
-            {activeSpecArticle.starter_spec.solution_overview ? (
-              <div className="spec-section">
-                <div className="spec-section-title">3. Solution Overview & Scope Boundaries</div>
-                <div className="spec-section-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div><strong>What It Does:</strong> {activeSpecArticle.starter_spec.solution_overview.what_it_does}</div>
-                  <div><strong>Why Agentic / AI:</strong> {activeSpecArticle.starter_spec.solution_overview.why_agentic}</div>
-                  
-                  {activeSpecArticle.starter_spec.solution_overview.scope_in && (
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <strong>In-Scope (MVP):</strong>
-                      <ul style={{ paddingLeft: '1.2rem', margin: '0.25rem 0 0 0' }}>
-                        {activeSpecArticle.starter_spec.solution_overview.scope_in.map((item, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.2rem' }}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {activeSpecArticle.starter_spec.solution_overview.scope_out && (
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <strong>Out of Scope (Post-MVP Guardrails):</strong>
-                      <ul style={{ paddingLeft: '1.2rem', margin: '0.25rem 0 0 0', color: '#64748b' }}>
-                        {activeSpecArticle.starter_spec.solution_overview.scope_out.map((item, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.2rem' }}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : activeSpecArticle.starter_spec.core_features && (
-              <div className="spec-section">
-                <div className="spec-section-title">MVP Core Features</div>
-                <div className="spec-section-body">
-                  <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
-                    {activeSpecArticle.starter_spec.core_features.map((feat, idx) => (
-                      <li key={idx} style={{ marginBottom: '0.3rem' }}>{feat}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* Technical Architecture & SLAs */}
-            {activeSpecArticle.starter_spec.technical_architecture ? (
-              <div className="spec-section">
-                <div className="spec-section-title">4. Technical Architecture, Latency SLAs & Token COGS</div>
-                <div className="spec-metrics-grid">
-                  {Object.entries(activeSpecArticle.starter_spec.technical_architecture).map(([key, val]) => (
-                    <div key={key} className="spec-metric-card">
-                      <div className="spec-metric-label">{key.replace(/_/g, ' ')}</div>
-                      <div className="spec-metric-val" style={{ fontSize: '0.8rem', lineHeight: '1.4' }}>{val}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : activeSpecArticle.starter_spec.metrics && (
-              <div className="spec-section">
-                <div className="spec-section-title">Success Metrics & Latency SLAs</div>
-                <div className="spec-metrics-grid">
-                  {Object.entries(activeSpecArticle.starter_spec.metrics).map(([key, val]) => (
-                    <div key={key} className="spec-metric-card">
-                      <div className="spec-metric-label">{key.replace(/_/g, ' ')}</div>
-                      <div className="spec-metric-val">{val}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Human-in-the-Loop & Safeguards */}
-            {activeSpecArticle.starter_spec.hitl_and_safeguards && (
-              <div className="spec-section">
-                <div className="spec-section-title">5. Human-in-the-Loop Safeguards & Reason Codes</div>
-                <div className="spec-section-body">
-                  <div><strong>Confidence Threshold:</strong> {activeSpecArticle.starter_spec.hitl_and_safeguards.confidence_threshold}</div>
-                  {activeSpecArticle.starter_spec.hitl_and_safeguards.override_reason_codes && (
-                    <div style={{ marginTop: '0.35rem' }}>
-                      <strong>Override Reason Codes:</strong>
-                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.3rem' }}>
-                        {activeSpecArticle.starter_spec.hitl_and_safeguards.override_reason_codes.map((rc, idx) => (
-                          <span key={idx} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: 4, fontSize: '0.72rem', color: '#334155' }}>
-                            {rc}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <button 
-              className="btn-copy-spec"
-              onClick={() => {
-                const spec = activeSpecArticle.starter_spec
-                let md = `# PRD: ${spec.project_name || activeSpecArticle.title}\n`
-                if (spec.subtitle) md += `**${spec.subtitle}**\n\n`
-                if (spec.problem_statement) {
-                  md += `## 1. Problem Statement & Why Now\n- **Business Pain**: ${spec.problem_statement.business_pain}\n- **Why Now**: ${spec.problem_statement.why_now}\n\n`
-                } else if (spec.objective) {
-                  md += `## 1. Objective\n${spec.objective}\n\n`
-                }
-                if (spec.personas && Array.isArray(spec.personas)) {
-                  md += `## 2. Target Personas\n`
-                  spec.personas.forEach(p => {
-                    if (typeof p === 'string') {
-                      md += `- ${p}\n`
-                    } else {
-                      md += `### ${p.role}\n- **Goal**: ${p.goal}\n- **Pain Point**: ${p.pain_point}\n\n`
-                    }
-                  })
-                }
-                if (spec.solution_overview) {
-                  md += `## 3. Solution Overview\n- **What It Does**: ${spec.solution_overview.what_it_does}\n- **Why Agentic**: ${spec.solution_overview.why_agentic}\n\n`
-                  if (spec.solution_overview.scope_in) {
-                    md += `**In Scope (MVP)**:\n`
-                    spec.solution_overview.scope_in.forEach(i => { md += `- [x] ${i}\n` })
-                    md += `\n`
-                  }
-                  if (spec.solution_overview.scope_out) {
-                    md += `**Out of Scope**:\n`
-                    spec.solution_overview.scope_out.forEach(i => { md += `- [ ] ${i}\n` })
-                    md += `\n`
-                  }
-                }
-                if (spec.technical_architecture) {
-                  md += `## 4. Technical Architecture & SLAs\n`
-                  for (const [k, v] of Object.entries(spec.technical_architecture)) {
-                    md += `- **${k.replace(/_/g, ' ').toUpperCase()}**: ${v}\n`
-                  }
-                  md += `\n`
-                }
-                if (spec.hitl_and_safeguards) {
-                  md += `## 5. HITL Safeguards\n- **Confidence**: ${spec.hitl_and_safeguards.confidence_threshold}\n`
-                  if (spec.hitl_and_safeguards.override_reason_codes) {
-                    md += `- **Reason Codes**: ${spec.hitl_and_safeguards.override_reason_codes.join(', ')}\n`
-                  }
-                }
-                navigator.clipboard.writeText(md)
-                showToast("📋 YieldOps PRD copied to clipboard as Markdown!")
-              }}
-            >
-              <Copy size={14} />
-              <span>Copy YieldOps PRD as Markdown</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Switch Profile Modal */}
       {showProfileModal && (

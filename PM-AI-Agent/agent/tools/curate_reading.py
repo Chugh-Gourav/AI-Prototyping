@@ -40,7 +40,7 @@ CURATED_SOURCES = {
         "Shreyas Doshi (shreyasdoshi.substack.com)",
     ],
     "product_ideas": [
-        "Contextual PRD specifications focusing on user friction, system architecture, and unit economics",
+        "Actionable AI product concepts, UI/UX interaction design patterns, and workflow exploration prototypes for PMs to try (e.g., Google PAIR, Anthropic Computer Use, Eugene Yan LLM Patterns)",
     ],
 }
 
@@ -59,6 +59,7 @@ APPROVED_DOMAINS = {
     "eugeneyan.com": "Eugene Yan",
     "lilianweng.github.io": "Lilian Weng",
     "pair.withgoogle.com": "Google PAIR",
+    "simonwillison.net": "Simon Willison",
     # Business & Economics
     "a16z.com": "a16z",
     "a16z.news": "a16z News",
@@ -110,13 +111,15 @@ def curate_reading_list(
             "1. AI Deep Dive & Application\n"
             "2. Business & Economics\n"
             "3. Core Product Management\n"
-            "4. Product Ideas to try\n\n"
+            "4. Product Ideas to try (practical product concepts, UX design patterns, and prototyping experiments — NOT PRDs)\n\n"
             "CRITICAL CONDITIONS:\n"
             "1. NO generic homepages. EVERY URL MUST BE A DIRECT DEEP LINK THAT RETURNS HTTP 200.\n"
             "2. Genuine publication date (2025/2026 or flagged as timeless classic).\n"
             "3. ONLY recommend from APPROVED DOMAINS.\n"
-            "For EACH item, provide the structured PM Lens: summary_problem, summary_insight, "
-            "summary_why_read, outcome_learning, and 3 quantitative key takeaways."
+            "4. MANDATORY META-THINKING: Connect the dots across Architecture (how it works) ⟷ "
+            "Unit Economics (margins/COGS) ⟷ Product Roadmap (what to ship).\n"
+            "For EACH item, provide the structured PM Lens: outcome_learning, meta_synthesis, "
+            "summary_problem, summary_insight, summary_why_read, and 3 quantitative key takeaways."
         ),
         "output_format": {
             "per_article": [
@@ -131,6 +134,7 @@ def curate_reading_list(
                 "access_type",
                 "estimated_read_time",
                 "outcome_learning",
+                "meta_synthesis (Connecting the Dots across Architecture ⟷ Economics ⟷ Roadmap)",
                 "summary_problem",
                 "summary_insight",
                 "summary_why_read",

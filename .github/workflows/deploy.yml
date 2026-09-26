@@ -30,6 +30,8 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
           
       - name: Install dependencies & Build
+        env:
+          VITE_API_URL: https://pm-learning-hub-595396735241.us-central1.run.app
         run: |
           if [ -d "PM-AI-Agent/frontend" ]; then
             cd PM-AI-Agent/frontend

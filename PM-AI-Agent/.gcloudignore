@@ -1,0 +1,24 @@
+.gcloudignore
+.git
+.gitignore
+
+# Virtualenvs & Python cache
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+ENV/
+
+# Node & dependencies
+node_modules/
+frontend/node_modules/
+
+# Local databases (rebuilt on container build)
+*.db
+*.sqlite
+*.sqlite3
+
+# Local logs
+*.log
+.DS_Store

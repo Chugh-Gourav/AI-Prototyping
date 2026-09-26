@@ -73,6 +73,7 @@ def init_db():
         review_rubric TEXT,
         staged_at TIMESTAMP,
         published_at TIMESTAMP,
+        meta_synthesis TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
@@ -87,6 +88,7 @@ def init_db():
         ("review_rubric", "TEXT"),
         ("staged_at", "TIMESTAMP"),
         ("published_at", "TIMESTAMP"),
+        ("meta_synthesis", "TEXT"),
     ]
     for col_name, col_type in migrations:
         if col_name not in existing_cols:
@@ -505,9 +507,9 @@ def stage_new_candidate(art: dict, curated_by: str = "staysharp_agent") -> str:
             id, title, author, source_and_url, published_date, pillar, tier,
             difficulty, access_type, estimated_read_time, summary,
             summary_problem, summary_insight, summary_why_read,
-            outcome_learning, key_takeaways, eval_score, is_timeless, starter_spec,
+            outcome_learning, meta_synthesis, key_takeaways, eval_score, is_timeless, starter_spec,
             status, curated_by, review_rubric, staged_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'staged', ?, ?, CURRENT_TIMESTAMP)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'staged', ?, ?, CURRENT_TIMESTAMP)
     """, (
         art_id,
         art["title"],
@@ -524,6 +526,7 @@ def stage_new_candidate(art: dict, curated_by: str = "staysharp_agent") -> str:
         art.get("summary_insight", art["summary"]),
         art.get("summary_why_read", art["summary"]),
         art.get("outcome_learning", "Helps you evaluate architecture trade-offs."),
+        art.get("meta_synthesis", ""),
         json.dumps(art.get("key_takeaways", [])),
         art.get("eval_score", 90.0),
         art.get("is_timeless", 0),
